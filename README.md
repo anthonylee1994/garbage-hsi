@@ -36,7 +36,7 @@ bun install
 bun run dev
 ```
 
-預設開發網址通常係 `http://localhost:5173`。
+預設開發網址係 `http://localhost:8080`。
 
 ## Scripts
 
