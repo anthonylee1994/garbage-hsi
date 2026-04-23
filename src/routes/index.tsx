@@ -16,7 +16,7 @@ const data = {
   trend: ["受拖累而下跌", "先升後跌", "裂口下跌"],
   mainCause: [
     "人民幣升", "人民幣跌", "經濟數據太好", "經濟數據唔好", "加息", "減息",
-    "PMI高", "PMI低", "非農高", "非農低", "PPI高", "PPI低", "出口", "進口",
+    "PMI高", "PMI低", "非農高", "非農低", "PPI高", "PPI低", "CPI高", "CPI低", "GDP高", "GDP低", "出口", "進口",
     "通脹進一步擴大引發過熱憂慮", "通縮進一步擴大引發增長憂慮",
     "政治會議沒有推出大型救市口風", "新年",
   ],
@@ -62,7 +62,7 @@ let counter = 0;
 function generate(): Article {
   counter += 1;
   const body = `今日，恒指${pick(data.trend)}。外圍方面，${pick(data.market)}表現${pick(data.marketPerformance)}，加上${pick(data.mainCause)}及${pick(data.macro)}，投資氣氛${pick(data.sentiment)}。板塊方面，${pick(data.sector)}受${pick(data.sectorNews)}影響，${pick(data.impact)}大市。消息面上，市場亦關注${pick(data.event)}。最後點都要補充，最緊要係沈振盈。`;
-  const up = Math.random() > 0.5;
+  const up = false;
   const change = (Math.random() * 600 + 20).toFixed(2);
   const pct = (Math.random() * 3 + 0.1).toFixed(2);
   const base = 18000 + Math.random() * 4000;
