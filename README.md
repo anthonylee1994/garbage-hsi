@@ -53,6 +53,21 @@ Type check:
 npx tsc --noEmit
 ```
 
+## Deploy
+
+呢個 project 而家已經 set 做 GitHub Pages deployment：
+
+- push 去 `master` 會自動 build 同 deploy
+- custom domain 係 `https://garbage-hsi.on99.app`
+- domain mapping 由 [`public/CNAME`](/Users/anthony/Documents/Development/garbage-hsi/public/CNAME) 管
+
+如果 GitHub Pages repo setting 未開，去 GitHub repository settings:
+
+- `Pages` 入面將 source 設做 `GitHub Actions`
+- `Custom domain` 填 `garbage-hsi.on99.app`
+
+DNS 嗰邊都要指返去 GitHub Pages，唔係淨係 repo 入面加 `CNAME` 都唔會生效。
+
 ## Project Structure
 
 ```text
