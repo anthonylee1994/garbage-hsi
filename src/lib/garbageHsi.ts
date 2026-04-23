@@ -109,7 +109,7 @@ const data = {
         {author: "譚朗蔚", text: "止蝕係我嘅靈魂"},
         {author: "譚朗蔚", text: "唔好同股票談戀愛"},
         {author: "譚朗蔚", text: "Buy High, Sell Higher"},
-        {author: "譚朗蔚", text: "美股係世界中心"},
+        {author: "譚朗蔚", text: "美股是零"},
         {author: "譚朗蔚", text: "唔撈底"},
         {author: "譚朗蔚", text: "尊重趨勢"},
         {author: "譚朗蔚", text: "契媽係我偶像"},
