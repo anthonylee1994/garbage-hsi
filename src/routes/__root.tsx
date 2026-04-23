@@ -44,6 +44,8 @@ export const Route = createRootRoute({
                 content:
                     "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/951cb968-8665-4582-a082-bd3e3f91e2d6/id-preview-d204ecb4--6fb56167-babf-4030-9c76-bf0e22b45c04.lovable.app-1776921788429.png",
             },
+          { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/63e0934a-18da-482e-980d-4e7913bb0ffc/id-preview-04b6c768--6fb56167-babf-4030-9c76-bf0e22b45c04.lovable.app-1776931463280.png" },
+          { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/63e0934a-18da-482e-980d-4e7913bb0ffc/id-preview-04b6c768--6fb56167-babf-4030-9c76-bf0e22b45c04.lovable.app-1776931463280.png" },
         ],
         links: [
             {
