@@ -2,6 +2,8 @@
 
 一個用 React + Vite 整嘅垃圾恒指新聞產生器。
 
+Live: [garbage-hsi.on99.app](https://garbage-hsi.on99.app)
+
 個 app 會隨機生成一篇港股垃圾新聞，連埋指數數字、板塊原因、國際局勢同名家金句一齊砌出嚟。金句會喺沈振盈同譚朗蔚之間 random 抽，header 個專欄名都會跟住變。
 
 ## Features
@@ -58,7 +60,7 @@ npx tsc --noEmit
 呢個 project 而家已經 set 做 GitHub Pages deployment：
 
 - push 去 `master` 會自動 build 同 deploy
-- custom domain 係 `https://garbage-hsi.on99.app`
+- custom domain 係 [garbage-hsi.on99.app](https://garbage-hsi.on99.app)
 - domain mapping 由 [`public/CNAME`](/Users/anthony/Documents/Development/garbage-hsi/public/CNAME) 管
 
 如果 GitHub Pages repo setting 未開，去 GitHub repository settings:
