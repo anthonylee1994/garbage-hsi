@@ -68,6 +68,7 @@ const data = {
 };
 
 const pick = <T,>(list: T[]): T => list[Math.floor(Math.random() * list.length)];
+const STORAGE_KEY = "garbage-hsi:articles";
 
 type Article = {
     id: number;
@@ -80,6 +81,11 @@ type Article = {
     changePct: string;
     up: boolean;
     time: string;
+};
+
+type StoredArticles = {
+    history: Article[];
+    main: Article;
 };
 
 let counter = 0;
@@ -109,13 +115,53 @@ function generate(): Article {
     };
 }
 
+function isArticle(value: unknown): value is Article {
+    if (!value || typeof value !== "object") return false;
+    const article = value as Article;
+    return (
+        typeof article.id === "number" &&
+        typeof article.headline === "string" &&
+        typeof article.body === "string" &&
+        typeof article.quote === "string" &&
+        typeof article.reporter === "string" &&
+        typeof article.index === "string" &&
+        typeof article.change === "string" &&
+        typeof article.changePct === "string" &&
+        typeof article.up === "boolean" &&
+        typeof article.time === "string"
+    );
+}
+
+function loadStoredArticles(): StoredArticles | null {
+    try {
+        const raw = window.localStorage.getItem(STORAGE_KEY);
+        if (!raw) return null;
+        const parsed = JSON.parse(raw) as Partial<StoredArticles>;
+        if (!parsed.main || !isArticle(parsed.main) || !Array.isArray(parsed.history) || !parsed.history.every(isArticle)) return null;
+        return {
+            main: parsed.main,
+            history: parsed.history.slice(0, 8),
+        };
+    } catch {
+        return null;
+    }
+}
+
 function Index() {
     const [main, setMain] = React.useState<Article | null>(null);
     const [history, setHistory] = React.useState<Article[]>([]);
     const [now, setNow] = React.useState("");
 
     React.useEffect(() => {
-        setMain(generate());
+        const stored = loadStoredArticles();
+        if (stored) {
+            setMain(stored.main);
+            setHistory(stored.history);
+            counter = Math.max(stored.main.id, ...stored.history.map(article => article.id));
+        } else {
+            setMain(generate());
+        }
+
         const update = () =>
             setNow(
                 new Date().toLocaleString("zh-HK", {
@@ -131,6 +177,17 @@ function Index() {
         const t = setInterval(update, 1000 * 30);
         return () => clearInterval(t);
     }, []);
+
+    React.useEffect(() => {
+        if (!main) return;
+        window.localStorage.setItem(
+            STORAGE_KEY,
+            JSON.stringify({
+                main,
+                history,
+            } satisfies StoredArticles)
+        );
+    }, [history, main]);
 
     const handleGenerate = () => {
         if (main) setHistory(h => [main, ...h].slice(0, 8));
