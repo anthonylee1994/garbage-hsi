@@ -1,13 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 
 export const Route = createFileRoute("/")({
   component: Index,
   head: () => ({
     meta: [
-      { title: "垃圾恒指新聞產生器" },
+      { title: "垃圾恒指新聞產生器 | 港股財經頭條" },
       { name: "description", content: "一鍵生成垃圾恒指新聞，最緊要係沈振盈。" },
     ],
   }),
@@ -17,7 +16,7 @@ const data = {
   trend: ["受拖累而下跌", "先升後跌", "裂口下跌"],
   mainCause: [
     "人民幣升", "人民幣跌", "經濟數據太好", "經濟數據唔好", "加息", "減息",
-    "pmi高", "pmi低", "非農高", "非農低", "ppi高", "ppi低", "出口", "進口",
+    "PMI高", "PMI低", "非農高", "非農低", "PPI高", "PPI低", "出口", "進口",
     "通脹進一步擴大引發過熱憂慮", "通縮進一步擴大引發增長憂慮",
     "政治會議沒有推出大型救市口風", "新年",
   ],
@@ -35,67 +34,213 @@ const data = {
     "以色列巴勒斯坦地區小朋友齊打交", "伊朗宣佈介入小朋友齊打交", "中東宣佈加入小朋友齊打交",
     "北韓玩具核彈危機", "南北韓邊境衝突，邊境守衛造成XX人傷亡", "柬埔寨KK園政府軍叛軍駁火",
   ],
+  reporter: ["陳大文", "李小強", "黃師奶", "王財經", "張記者", "何小編"],
+  headline: [
+    "恒指今日表現反覆 投資者宜審慎",
+    "外圍拖累港股 大行睇淡後市",
+    "板塊輪流炒作 恒指尋方向",
+    "風雲色變 港股急挫",
+    "市場觀望情緒濃 成交縮減",
+  ],
 };
 
 const pick = <T,>(list: T[]): T => list[Math.floor(Math.random() * list.length)];
 
-function generate() {
-  return `今日，恒指${pick(data.trend)}。外圍方面，${pick(data.market)}表現${pick(data.marketPerformance)}，加上${pick(data.mainCause)}及${pick(data.macro)}，投資氣氛${pick(data.sentiment)}。板塊方面，${pick(data.sector)}受${pick(data.sectorNews)}影響，${pick(data.impact)}大市。消息面上，市場亦關注${pick(data.event)}。最後點都要補充，最緊要係沈振盈。`;
+type Article = {
+  id: number;
+  headline: string;
+  body: string;
+  reporter: string;
+  index: string;
+  change: string;
+  changePct: string;
+  up: boolean;
+  time: string;
+};
+
+let counter = 0;
+function generate(): Article {
+  counter += 1;
+  const body = `今日，恒指${pick(data.trend)}。外圍方面，${pick(data.market)}表現${pick(data.marketPerformance)}，加上${pick(data.mainCause)}及${pick(data.macro)}，投資氣氛${pick(data.sentiment)}。板塊方面，${pick(data.sector)}受${pick(data.sectorNews)}影響，${pick(data.impact)}大市。消息面上，市場亦關注${pick(data.event)}。最後點都要補充，最緊要係沈振盈。`;
+  const up = Math.random() > 0.5;
+  const change = (Math.random() * 600 + 20).toFixed(2);
+  const pct = (Math.random() * 3 + 0.1).toFixed(2);
+  const base = 18000 + Math.random() * 4000;
+  return {
+    id: counter,
+    headline: pick(data.headline),
+    body,
+    reporter: pick(data.reporter),
+    index: base.toFixed(2),
+    change: `${up ? "+" : "-"}${change}`,
+    changePct: `${up ? "+" : "-"}${pct}%`,
+    up,
+    time: new Date().toLocaleTimeString("zh-HK", { hour: "2-digit", minute: "2-digit", second: "2-digit" }),
+  };
 }
 
 function Index() {
-  const [news, setNews] = useState<string>(() => generate());
-  const [history, setHistory] = useState<string[]>([]);
+  const [main, setMain] = useState<Article | null>(null);
+  const [history, setHistory] = useState<Article[]>([]);
+  const [now, setNow] = useState("");
+
+  useEffect(() => {
+    setMain(generate());
+    const update = () =>
+      setNow(
+        new Date().toLocaleString("zh-HK", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+          weekday: "long",
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
+      );
+    update();
+    const t = setInterval(update, 1000 * 30);
+    return () => clearInterval(t);
+  }, []);
 
   const handleGenerate = () => {
-    setHistory((h) => [news, ...h].slice(0, 10));
-    setNews(generate());
+    if (main) setHistory((h) => [main, ...h].slice(0, 8));
+    setMain(generate());
   };
 
+  if (!main) return null;
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-secondary to-background">
-      <div className="container mx-auto max-w-3xl px-4 py-12">
-        <header className="mb-10 text-center">
-          <div className="mb-3 inline-block rounded-full bg-destructive/10 px-4 py-1 text-xs font-semibold uppercase tracking-widest text-destructive">
-            Breaking · 財經垃圾話
+    <div className="min-h-screen bg-background">
+      {/* Top ticker */}
+      <div className="border-b border-border bg-foreground text-background">
+        <div className="container mx-auto flex items-center gap-4 overflow-hidden px-4 py-1.5 text-xs">
+          <span className="shrink-0 rounded bg-destructive px-2 py-0.5 font-bold uppercase tracking-wider">Live</span>
+          <div className="flex animate-pulse gap-6 whitespace-nowrap">
+            <span>恒指 {main.index} <span className={main.up ? "text-emerald-400" : "text-red-400"}>{main.change} ({main.changePct})</span></span>
+            <span>國指 7,234.11 <span className="text-emerald-400">+45.22</span></span>
+            <span>科指 4,012.55 <span className="text-red-400">-22.10</span></span>
+            <span>滬深300 3,890.40 <span className="text-emerald-400">+12.30</span></span>
+            <span>人民幣 7.2451</span>
           </div>
-          <h1 className="text-4xl font-bold tracking-tight text-foreground md:text-5xl">
-            垃圾恒指新聞產生器 📉
-          </h1>
-          <p className="mt-3 text-muted-foreground">一鍵生成毫無營養嘅恒指收市評論</p>
-        </header>
-
-        <Card className="border-2 shadow-xl">
-          <CardContent className="p-8">
-            <div className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              今日恒指評論
-            </div>
-            <p className="text-lg leading-relaxed text-foreground md:text-xl">{news}</p>
-            <Button onClick={handleGenerate} size="lg" className="mt-6 w-full">
-              再嚟一篇 🎲
-            </Button>
-          </CardContent>
-        </Card>
-
-        {history.length > 0 && (
-          <section className="mt-10">
-            <h2 className="mb-4 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-              過往廢話
-            </h2>
-            <div className="space-y-3">
-              {history.map((h, i) => (
-                <Card key={i} className="bg-muted/50">
-                  <CardContent className="p-4 text-sm text-muted-foreground">{h}</CardContent>
-                </Card>
-              ))}
-            </div>
-          </section>
-        )}
-
-        <footer className="mt-12 text-center text-xs text-muted-foreground">
-          純屬娛樂 · 最緊要係沈振盈
-        </footer>
+        </div>
       </div>
+
+      {/* Masthead */}
+      <header className="border-b-4 border-destructive bg-card">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-between gap-4">
+            <div className="text-xs text-muted-foreground">{now}</div>
+            <div className="hidden text-xs text-muted-foreground md:block">逢星期一至五更新 · 純屬娛樂</div>
+          </div>
+          <div className="mt-2 flex items-baseline gap-3">
+            <h1 className="font-serif text-3xl font-black tracking-tight text-foreground md:text-5xl">
+              垃圾恒指日報
+            </h1>
+            <span className="text-xs font-semibold uppercase tracking-widest text-destructive">
+              GARBAGE HSI DAILY
+            </span>
+          </div>
+          <nav className="mt-3 flex flex-wrap gap-x-5 gap-y-1 border-t border-border pt-2 text-sm font-medium text-foreground">
+            {["要聞", "港股", "中國", "國際", "科技", "地產", "風水", "沈振盈專欄"].map((n, i) => (
+              <span key={n} className={i === 0 ? "text-destructive" : "hover:text-destructive cursor-pointer"}>
+                {n}
+              </span>
+            ))}
+          </nav>
+        </div>
+      </header>
+
+      <main className="container mx-auto grid gap-8 px-4 py-8 lg:grid-cols-3">
+        {/* Main story */}
+        <article className="lg:col-span-2">
+          <div className="mb-3 flex items-center gap-2">
+            <span className="rounded-sm bg-destructive px-2 py-0.5 text-xs font-bold uppercase tracking-wider text-destructive-foreground">
+              即時新聞
+            </span>
+            <span className="text-xs uppercase tracking-wider text-muted-foreground">港股 · 收市評論</span>
+          </div>
+          <h2 className="font-serif text-3xl font-bold leading-tight text-foreground md:text-4xl">
+            {main.headline}
+          </h2>
+          <div className="mt-3 flex items-center gap-3 border-b border-border pb-3 text-xs text-muted-foreground">
+            <span>本報記者 <span className="font-semibold text-foreground">{main.reporter}</span> 報道</span>
+            <span>·</span>
+            <span>更新於 {main.time}</span>
+          </div>
+
+          {/* Index summary box */}
+          <div className="mt-5 grid grid-cols-3 gap-px overflow-hidden rounded border border-border bg-border text-center">
+            <div className="bg-card p-3">
+              <div className="text-[10px] uppercase tracking-wider text-muted-foreground">恒生指數</div>
+              <div className="mt-1 font-mono text-lg font-bold text-foreground">{main.index}</div>
+            </div>
+            <div className={`bg-card p-3 ${main.up ? "text-emerald-600" : "text-destructive"}`}>
+              <div className="text-[10px] uppercase tracking-wider text-muted-foreground">升跌</div>
+              <div className="mt-1 font-mono text-lg font-bold">{main.change}</div>
+            </div>
+            <div className={`bg-card p-3 ${main.up ? "text-emerald-600" : "text-destructive"}`}>
+              <div className="text-[10px] uppercase tracking-wider text-muted-foreground">變幅</div>
+              <div className="mt-1 font-mono text-lg font-bold">{main.changePct}</div>
+            </div>
+          </div>
+
+          {/* Article body with drop cap */}
+          <div className="mt-6 font-serif text-lg leading-loose text-foreground first-letter:float-left first-letter:mr-2 first-letter:font-serif first-letter:text-6xl first-letter:font-bold first-letter:leading-none first-letter:text-destructive">
+            {main.body}
+          </div>
+
+          <div className="mt-6 flex flex-wrap items-center gap-3 border-t border-border pt-4">
+            <Button onClick={handleGenerate} size="lg" className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              🎲 生成下一則頭條
+            </Button>
+            <span className="text-xs text-muted-foreground">純屬娛樂 · 內容由演算法產生</span>
+          </div>
+        </article>
+
+        {/* Sidebar */}
+        <aside className="space-y-6">
+          <section>
+            <h3 className="mb-3 border-b-2 border-destructive pb-1 text-sm font-bold uppercase tracking-wider text-foreground">
+              編輯精選
+            </h3>
+            <ul className="divide-y divide-border">
+              {history.length === 0 && (
+                <li className="py-3 text-sm text-muted-foreground">尚未有過往報道，按掣再生成多幾則。</li>
+              )}
+              {history.map((h, i) => (
+                <li key={h.id} className="flex gap-3 py-3">
+                  <span className="font-serif text-2xl font-bold text-destructive/60">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <div className="min-w-0">
+                    <div className="font-serif text-sm font-bold leading-snug text-foreground">
+                      {h.headline}
+                    </div>
+                    <div className="mt-1 line-clamp-2 text-xs text-muted-foreground">{h.body}</div>
+                    <div className="mt-1 text-[10px] uppercase tracking-wider text-muted-foreground">
+                      {h.reporter} · {h.time}
+                    </div>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </section>
+
+          <section className="rounded border border-border bg-muted/40 p-4">
+            <h3 className="font-serif text-base font-bold text-foreground">沈振盈金句</h3>
+            <p className="mt-2 font-serif text-sm italic leading-relaxed text-muted-foreground">
+              「最緊要係沈振盈。」
+            </p>
+            <div className="mt-2 text-right text-xs text-muted-foreground">— 編輯部</div>
+          </section>
+        </aside>
+      </main>
+
+      <footer className="border-t border-border bg-card">
+        <div className="container mx-auto px-4 py-6 text-center text-xs text-muted-foreground">
+          © 垃圾恒指日報 · 本報所有內容純屬虛構，與任何真實人物或機構無關 · 最緊要係沈振盈
+        </div>
+      </footer>
     </div>
   );
 }
