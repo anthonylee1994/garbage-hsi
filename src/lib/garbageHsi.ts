@@ -199,11 +199,6 @@ function getQuoteDetailsFromBody(body: string): Pick<Article, "quote" | "quoteAu
     };
 }
 
-function toStoredArticle(article: Article): StoredArticle {
-    const {quote: _quote, quoteAuthor: _quoteAuthor, ...storedArticle} = article;
-    return storedArticle;
-}
-
 function toArticle(article: StoredArticle): Article {
     return {
         ...article,
