@@ -9,6 +9,12 @@ type HistorySidebarProps = {
 export const HistorySidebar = ({history, quote, quoteAuthor}: HistorySidebarProps) => {
     return (
         <aside className="space-y-6">
+            <section className="rounded border border-border bg-muted/40 p-4">
+                <h3 className="font-serif text-base font-bold text-foreground">名家金句</h3>
+                <p className="mt-2 font-serif text-xl italic leading-relaxed text-foreground md:text-2xl text-center">「{quote}」</p>
+                <div className="mt-2 text-right text-sm text-muted-foreground">— {quoteAuthor || "編輯部"}</div>
+            </section>
+
             <section>
                 <h3 className="mb-3 border-b-2 border-destructive pb-1 text-sm font-bold uppercase tracking-wider text-foreground">編輯精選</h3>
                 <ul className="divide-y divide-border">
@@ -26,12 +32,6 @@ export const HistorySidebar = ({history, quote, quoteAuthor}: HistorySidebarProp
                         </li>
                     ))}
                 </ul>
-            </section>
-
-            <section className="rounded border border-border bg-muted/40 p-4">
-                <h3 className="font-serif text-base font-bold text-foreground">名家金句</h3>
-                <p className="mt-2 font-serif text-sm italic leading-relaxed text-muted-foreground">「{quote}」</p>
-                <div className="mt-2 text-right text-xs text-muted-foreground">— {quoteAuthor || "編輯部"}</div>
             </section>
         </aside>
     );
