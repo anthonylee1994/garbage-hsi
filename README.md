@@ -1,6 +1,6 @@
 # Garbage HSI
 
-一個用 React + Vite + TanStack Router 整嘅垃圾恒指新聞產生器。
+一個用 React + Vite 整嘅垃圾恒指新聞產生器。
 
 個 app 會隨機生成一篇港股垃圾新聞，連埋指數數字、板塊原因、國際局勢同名家金句一齊砌出嚟。金句會喺沈振盈同譚朗蔚之間 random 抽，header 個專欄名都會跟住變。
 
@@ -17,7 +17,6 @@
 - React 19
 - TypeScript
 - Vite
-- TanStack Router
 - Tailwind CSS 4
 
 ## Run Locally
@@ -62,7 +61,8 @@ src/
   components/ui/       shared UI primitives
   hooks/               stateful page logic
   lib/                 article generation and persistence logic
-  routes/              TanStack Router route files
+  app.tsx              app entry component
+  main.tsx             browser entry
 ```
 
 而家核心檔案大概係：
@@ -70,7 +70,7 @@ src/
 - `src/lib/garbageHsi.ts`: 隨機新聞資料、文章生成、localStorage 讀寫
 - `src/hooks/useGarbageHsi.ts`: page state、初始化、生成下一則文章
 - `src/components/home/GarbageHsiPage.tsx`: 首頁組裝
-- `src/routes/index.tsx`: route entry
+- `src/app.tsx`: app entry
 
 ## Notes
 
