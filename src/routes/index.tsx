@@ -190,7 +190,7 @@ function Index() {
           </div>
 
           <div className="mt-6 flex flex-wrap items-center gap-3 border-t border-border pt-4">
-            <Button onClick={handleGenerate} size="lg" className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+            <Button onClick={handleGenerate} size="lg" className="select-none bg-destructive text-destructive-foreground hover:bg-destructive/90">
               🎲 生成下一則頭條
             </Button>
             <span className="text-xs text-muted-foreground">純屬娛樂 · 內容由演算法產生</span>
